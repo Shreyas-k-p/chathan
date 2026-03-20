@@ -75,7 +75,7 @@ export default function OrderPage({ searchParams }: { searchParams: { restaurant
     }
   }, [restaurantId, tableId, setTable]);
 
-  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const total = cart.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
 
   const placeOrder = async () => {
     try {
@@ -96,7 +96,7 @@ export default function OrderPage({ searchParams }: { searchParams: { restaurant
           type: "ORDER_PLACED",
           orderId: newOrder._id,
           table_id: tableId,
-          items: cart.map(i => ({ name: i.name, qty: i.quantity })),
+          items: cart.map((i: any) => ({ name: i.name, qty: i.quantity })),
           total: total,
           timestamp: new Date().toISOString()
         });
@@ -234,7 +234,7 @@ export default function OrderPage({ searchParams }: { searchParams: { restaurant
                   <SheetTitle className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Your Selections</SheetTitle>
                 </SheetHeader>
                 <div className="py-8 space-y-6 max-h-[40vh] overflow-y-auto pr-2">
-                  {cart.map(item => (
+                  {cart.map((item: any) => (
                     <div key={item.menuItemId} className="flex justify-between items-center group">
                       <div>
                         <p className="font-bold text-slate-800 uppercase tracking-tight group-hover:text-indigo-600 transition-colors uppercase">{item.name}</p>
