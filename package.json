@@ -2,9 +2,11 @@
   "name": "scan4serve-root",
   "version": "1.0.0",
   "scripts": {
-    "client": "npm run dev --prefix client",
-    "server": "npm start --prefix server",
-    "dev": "npm run client & npm run server"
+    "install-all": "npm install && npm install --prefix client && npm install --prefix server",
+    "client:dev": "npm run dev --prefix client",
+    "server:dev": "npm start --prefix server",
+    "dev": "concurrently \"npm run client:dev\" \"npm run server:dev\"",
+    "build": "npm run build --prefix client"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
