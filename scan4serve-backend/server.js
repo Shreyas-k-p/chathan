@@ -12,6 +12,7 @@ const Order = require("./models/Order");
 const Restaurant = require("./models/Restaurant");
 const MenuItem = require("./models/MenuItem");
 const Table = require("./models/Table");
+const Announcement = require("./models/Announcement");
 
 const app = express();
 app.use(express.json());
@@ -76,17 +77,31 @@ app.post("/api/auth/login", async (req,res)=>{
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ error: "Node Access Denied" });
 
-    const token = jwt.sign({ id: user._id, role: user.role, restaurantId: user.restaurantId }, process.env.JWT_SECRET || "secret_matrix_key");
+    const token = jwt.sign({ id: user._id, role: user.role, name: user.name, restaurantId: user.restaurantId }, process.env.JWT_SECRET || "secret_matrix_key");
     res.json({ success: true, user, token });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// SaaS Matrix: Multi-Restaurant Hub
-app.get("/api/restaurants", (req, res) => {
-  res.json({ message: "Restaurants working" });
+// Announcements Registry
+app.get("/api/announcements", async (req, res) => res.json(await Announcement.find().sort({ createdAt: -1 })));
+app.post("/api/announcements", authShield(["SUPER_ADMIN", "MANAGER", "SUB_MANAGER"]), async (req, res) => {
+  try {
+    const announcement = await Announcement.create({
+      ...req.body,
+      authorId: req.user.id,
+      authorName: req.user.name || "Admin Hub",
+      restaurantId: req.user.restaurantId
+    });
+    res.json(announcement);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
+
+// SaaS Matrix: Multi-Restaurant Hub
+app.get("/api/restaurants", async (req,res)=> res.json(await Restaurant.find()));
 app.post("/api/restaurants", async (req,res)=> res.json(await Restaurant.create(req.body)));
 
 // Node-Isolated Menu Logic
