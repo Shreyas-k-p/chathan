@@ -40,6 +40,7 @@ export interface Announcement {
 }
 
 export interface Staff {
+  _id?: string;
   id: string;
   name: string;
   role: 'restaurant_admin' | 'manager' | 'sub_manager' | 'waiter' | 'kitchen';
@@ -109,35 +110,98 @@ export const useRestaurantStore = create<RestaurantState>()(
       updateOrderStatus: (id, status) => set((state) => ({ orders: state.orders.map(o => o._id === id ? { ...o, status } : o) })),
       cancelOrder: (id) => set((state) => ({ orders: state.orders.map(o => o._id === id ? { ...o, status: 'cancelled' as const } : o) })),
       removeItemFromOrder: (orderId, itemName) => set((state) => ({ orders: state.orders.map(o => o._id === orderId ? { ...o, items: o.items.filter(i => i.name !== itemName), total: o.total - (o.items.find(i => i.name === itemName)?.price || 0) } : o) })),
-      addMenuItem: (item) => set((state) => ({ menuItems: [item, ...state.menuItems] })),
+      
+      addMenuItem: async (item) => {
+        try {
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+          const token = localStorage.getItem('matrix_token');
+          const res = await fetch(`${apiUrl}/menu`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }, body: JSON.stringify(item) });
+          const data = await res.json();
+          if (res.ok) set((state) => ({ menuItems: [data, ...state.menuItems] }));
+        } catch (e) {
+            console.error(e);
+            set((state) => ({ menuItems: [item, ...state.menuItems] })); // fallback
+        }
+      },
       deleteMenuItem: (id) => set((state) => ({ menuItems: state.menuItems.filter(i => i._id !== id) })),
       toggleMenuItemAvailability: (id) => set((state) => ({ menuItems: state.menuItems.map(i => i._id === id ? { ...i, isAvailable: !i.isAvailable } : i) })),
+      
       addTable: (table) => set((state) => ({ tables: [...state.tables, table] })),
       updateTableStatus: (id, active) => set((state) => ({ tables: state.tables.map(t => t._id === id ? { ...t, active } : t) })),
       deleteTable: (id) => set((state) => ({ tables: state.tables.filter(t => t._id !== id) })),
-      addAnnouncement: (announcement) => set((state) => ({ announcements: [announcement, ...state.announcements] })),
-      addStaff: (member) => set((state) => ({ staff: [member, ...state.staff] })),
-      removeStaff: (id) => set((state) => ({ staff: state.staff.filter(s => s.id !== id) })),
-      updateStaffPhoto: (id, profilePhoto) => set((state) => ({ staff: state.staff.map(s => s.id === id ? { ...s, profilePhoto } : s) })),
-      addManagedRestaurant: (restaurant) => set((state) => ({ managedRestaurants: [restaurant, ...state.managedRestaurants] })),
+      
+      addAnnouncement: async (announcement) => {
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const token = localStorage.getItem('matrix_token');
+            const res = await fetch(`${apiUrl}/announcements`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...((token) ? { 'Authorization': `Bearer ${token}` } : {}) }, body: JSON.stringify(announcement) });
+            const data = await res.json();
+            if (res.ok) set((state) => ({ announcements: [data, ...state.announcements] }));
+        } catch (e) {
+            set((state) => ({ announcements: [announcement, ...state.announcements] }));
+        }
+      },
+      
+      addStaff: async (member) => {
+          try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const res = await fetch(`${apiUrl}/staff`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(member) });
+            const data = await res.json();
+            if (res.ok) set((state) => ({ staff: [data, ...state.staff] }));
+          } catch(e) {
+              set((state) => ({ staff: [member, ...state.staff] }));
+          }
+      },
+      removeStaff: async (id) => {
+          try {
+              const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+              await fetch(`${apiUrl}/staff/${id}`, { method: 'DELETE' });
+              set((state) => ({ staff: state.staff.filter(s => s._id !== id && s.id !== id) }));
+          } catch(e) {}
+      },
+      updateStaffPhoto: async (id, profilePhoto) => {
+          try {
+              const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+              const res = await fetch(`${apiUrl}/staff/photo/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ profilePhoto }) });
+              if (res.ok) set((state) => ({ staff: state.staff.map(s => (s._id === id || s.id === id) ? { ...s, profilePhoto } : s) }));
+          } catch(e) {}
+      },
+      
+      addManagedRestaurant: async (restaurant) => {
+          try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const res = await fetch(`${apiUrl}/restaurants`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(restaurant) });
+            const data = await res.json();
+            if (res.ok) set((state) => ({ managedRestaurants: [{...data, id: data._id}, ...state.managedRestaurants] }));
+          } catch(e) {}
+      },
       updateManagedRestaurant: (id, updates) => set((state) => ({ managedRestaurants: state.managedRestaurants.map(r => r.id === id ? { ...r, ...updates } : r) })),
 
       syncMatrix: async () => {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
         try {
           const resData = await fetch(`${apiUrl}/restaurants`).then(r => r.json());
           if (Array.isArray(resData)) set({ managedRestaurants: resData.map(r => ({ ...r, id: r._id || r.id })) });
-          const orderData = await fetch(`${apiUrl}/orders`).then(r => r.json());
+          
+          const orderData = await fetch(`${apiUrl}/orders/ALL`).then(r => r.json());
           if (Array.isArray(orderData)) set({ orders: orderData });
+
+          const menuData = await fetch(`${apiUrl}/menu/ALL`).then(r => r.json());
+          if (Array.isArray(menuData)) set({ menuItems: menuData });
+
+          const staffData = await fetch(`${apiUrl}/staff`).then(r => r.json());
+          if (Array.isArray(staffData)) set({ staff: staffData.map(s => ({...s, id: s._id})) });
+
+          const announcementsData = await fetch(`${apiUrl}/announcements`).then(r => r.json());
+          if (Array.isArray(announcementsData)) set({ announcements: announcementsData });
+
         } catch (e) { 
           console.error('Matrix Hub: Sync Terminal Failure - Switching to Node Cache', e);
-          const mockRes = [{ id: 'gp-001', name: 'The Grand Palace', managerName: 'Sanjay Malik', mobile: '9876543210', location: 'Mumbai HQ', status: 'active' as const, createdAt: new Date().toISOString(), valuation: '₹8.4L', staffCount: 12 }];
-          set({ managedRestaurants: mockRes });
         }
       }
     }),
     {
-      name: 'scan4serve-matrix-vault-v11'
+      name: 'scan4serve-matrix-vault-v12'
     }
   )
 );

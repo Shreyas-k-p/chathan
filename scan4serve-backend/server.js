@@ -13,6 +13,7 @@ const Restaurant = require("./models/Restaurant");
 const MenuItem = require("./models/MenuItem");
 const Table = require("./models/Table");
 const Announcement = require("./models/Announcement");
+const Staff = require("./models/Staff");
 
 const app = express();
 app.use(express.json());
@@ -103,6 +104,13 @@ app.post("/api/announcements", authShield(["SUPER_ADMIN", "MANAGER", "SUB_MANAGE
 // SaaS Matrix: Multi-Restaurant Hub
 app.get("/api/restaurants", async (req,res)=> res.json(await Restaurant.find()));
 app.post("/api/restaurants", async (req,res)=> res.json(await Restaurant.create(req.body)));
+
+// Node-Isolated Staff Logic
+app.get("/api/staff", async (req,res)=> res.json(await Staff.find().sort({ createdAt: -1 })));
+app.post("/api/staff", async (req,res)=> res.json(await Staff.create(req.body)));
+app.put("/api/staff/photo/:id", async (req,res)=> res.json(await Staff.findByIdAndUpdate(req.params.id, { profilePhoto: req.body.profilePhoto }, { new: true })));
+app.delete("/api/staff/:id", async (req, res)=> res.json(await Staff.findByIdAndDelete(req.params.id)));
+
 
 // Node-Isolated Menu Logic
 app.get("/api/menu/:restaurantId", async (req,res)=> res.json(await MenuItem.find({ restaurantId: req.params.restaurantId })));
