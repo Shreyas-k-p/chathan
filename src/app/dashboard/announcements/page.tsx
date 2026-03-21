@@ -25,7 +25,7 @@ export default function AnnouncementsPage() {
 
   useEffect(() => { syncMatrix(); }, []);
 
-  const canManage = ['manager', 'restaurant_admin', 'super_admin'].includes(user?.role || '');
+  const canManage = ['MANAGER', 'RESTAURANT_ADMIN', 'SUPER_ADMIN', 'SUB_MANAGER'].includes(user?.role || '');
 
   const handlePost = (e: React.FormEvent) => {
     e.preventDefault();
