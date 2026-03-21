@@ -94,13 +94,13 @@ export default function StaffManagementPage() {
                     </div>
                     <div className="space-y-2">
                         <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Node Operator Signature (Photo)</label>
-                        <div className="flex gap-4 items-center bg-zinc-800/20 p-2 rounded-xl border border-white/5">
+                        <div className="flex gap-4 items-center h-14">
                             {newStaff.profilePhoto ? (
                                 <img src={newStaff.profilePhoto as string} alt="Staff" className="w-14 h-14 rounded-xl object-cover ring-1 ring-white/10 shrink-0" />
                             ) : (
                                 <div className="w-14 h-14 rounded-xl bg-zinc-800/50 flex items-center justify-center text-zinc-500 shrink-0"><Camera size={20} /></div>
                             )}
-                            <div className="flex-1 relative">
+                            <div className="flex-1 relative h-full">
                                 <input type="file" accept="image/*" id="staffPhotoUpload" className="hidden" onChange={(e) => {
                                      const file = e.target.files?.[0];
                                      if (file) {
@@ -110,9 +110,9 @@ export default function StaffManagementPage() {
                                         reader.readAsDataURL(file);
                                      }
                                 }} />
-                                <label htmlFor="staffPhotoUpload" className="flex items-center justify-between w-full h-14 px-5 bg-zinc-800/40 rounded-xl hover:bg-zinc-700/50 transition-colors cursor-pointer border border-white/5 active:scale-[0.98]">
+                                <label htmlFor="staffPhotoUpload" className="flex items-center justify-between w-full h-full px-5 bg-zinc-800/40 rounded-xl hover:bg-zinc-700/50 transition-colors cursor-pointer border border-white/5 active:scale-[0.98]">
                                     <span className="text-[10px] uppercase font-black tracking-widest italic text-zinc-400 truncate">{newStaff.profilePhoto ? 'Signature Captured ✓' : 'Upload Operator Image'}</span>
-                                    <Upload size={14} className="text-zinc-500" />
+                                    <Upload size={14} className="text-zinc-500 shrink-0" />
                                 </label>
                             </div>
                         </div>

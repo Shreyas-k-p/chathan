@@ -108,13 +108,13 @@ export default function DashboardPage() {
                                     <input value={newRestaurant.managerEmail as string} onChange={e => setNewRestaurant({...newRestaurant, managerEmail: e.target.value})} placeholder="Manager Login Email" type="email" className="w-full bg-zinc-900 border-none h-14 px-6 rounded-xl text-white font-black italic shadow-inner outline-none transition-all focus:ring-1 focus:ring-indigo-500/50" />
                                     <input value={newRestaurant.managerPassword as string} onChange={e => setNewRestaurant({...newRestaurant, managerPassword: e.target.value})} placeholder="Initial Password" type="password" className="w-full bg-zinc-900 border-none h-14 px-6 rounded-xl text-white font-black italic shadow-inner outline-none transition-all focus:ring-1 focus:ring-indigo-500/50" />
                                 </div>
-                                <div className="flex gap-4 items-center bg-zinc-900/50 p-2 rounded-xl">
+                                <div className="flex gap-4 items-center h-14">
                                     {newRestaurant.managerPhoto ? (
                                         <img src={newRestaurant.managerPhoto as string} alt="Manager" className="w-14 h-14 rounded-xl object-cover ring-1 ring-white/10 shrink-0" />
                                     ) : (
                                         <div className="w-14 h-14 rounded-xl bg-zinc-900 flex items-center justify-center text-zinc-600 shrink-0"><Camera size={20} /></div>
                                     )}
-                                    <div className="flex-1 relative">
+                                    <div className="flex-1 relative h-full">
                                         <input type="file" accept="image/*" id="managerPhotoUpload" className="hidden" onChange={(e) => {
                                              const file = e.target.files?.[0];
                                              if (file) {
@@ -124,9 +124,9 @@ export default function DashboardPage() {
                                                 reader.readAsDataURL(file);
                                              }
                                         }} />
-                                        <label htmlFor="managerPhotoUpload" className="flex items-center justify-between w-full h-14 px-4 bg-zinc-800/40 rounded-xl hover:bg-zinc-800 transition-colors cursor-pointer border border-white/5 active:scale-[0.98]">
+                                        <label htmlFor="managerPhotoUpload" className="flex items-center justify-between w-full h-full px-5 bg-zinc-800/40 rounded-xl hover:bg-zinc-800 transition-colors cursor-pointer border border-white/5 active:scale-[0.98]">
                                             <span className="text-[10px] uppercase font-black tracking-widest italic text-zinc-400 truncate">{newRestaurant.managerPhoto ? 'Update Device Signature' : 'Attach Device Signature (Photo)'}</span>
-                                            <Upload size={14} className="text-zinc-500" />
+                                            <Upload size={14} className="text-zinc-500 shrink-0" />
                                         </label>
                                     </div>
                                 </div>
