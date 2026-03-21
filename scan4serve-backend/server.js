@@ -84,7 +84,9 @@ app.post("/api/auth/login", async (req,res)=>{
 });
 
 // SaaS Matrix: Multi-Restaurant Hub
-app.get("/api/restaurants", async (req,res)=> res.json(await Restaurant.find()));
+app.get("/api/restaurants", (req, res) => {
+  res.json({ message: "Restaurants working" });
+});
 app.post("/api/restaurants", async (req,res)=> res.json(await Restaurant.create(req.body)));
 
 // Node-Isolated Menu Logic
