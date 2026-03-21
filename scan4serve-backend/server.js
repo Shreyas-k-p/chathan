@@ -17,7 +17,11 @@ const Staff = require("./models/Staff");
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: '*' }));
+app.use(cors({ 
+    origin: ['https://chathan-3.onrender.com', 'https://chathan-gamma.vercel.app', 'http://localhost:3000'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+}));
 
 // 📡 PRODUCTION HEALTH CHECK Node
 app.get("/", (req, res) => res.send("📡 Scan4Serve Matrix Engine v5.0 [PRODUCTION_BLDR] Online"));
@@ -102,29 +106,7 @@ app.post("/api/announcements", authShield(["SUPER_ADMIN", "MANAGER", "SUB_MANAGE
 });
 
 // SaaS Matrix: Multi-Restaurant Hub
-app.get("/api/restaurants", async (req,res)=> {
-    try {
-        const dbRestaurants = await Restaurant.find();
-        if (dbRestaurants.length === 0) {
-            return res.json([{
-                _id: "demo12345678901234567890",
-                name: "Demo Restaurant",
-                location: "SNMIMT",
-                managerName: "Demo User",
-                managerEmail: "demo@scan4serve.com",
-                mobile: "+91 0000000000",
-                status: "active",
-                managerPhoto: "https://via.placeholder.com/150",
-                valuation: "₹1,000,000",
-                staffCount: 5,
-                createdAt: new Date().toISOString()
-            }]);
-        }
-        res.json(dbRestaurants);
-    } catch(err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+app.get("/api/restaurants", async (req,res)=> res.json(await Restaurant.find()));
 app.post("/api/restaurants", async (req,res)=> {
     try { 
       const restaurant = await Restaurant.create(req.body); 
