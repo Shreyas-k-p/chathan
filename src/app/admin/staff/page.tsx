@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Users, UserPlus, ShieldCheck, Mail, Trash2, Camera, Star } from 'lucide-react';
+import { Users, UserPlus, ShieldCheck, Mail, Trash2, Camera, Star, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function StaffManagementPage() {
@@ -67,14 +67,14 @@ export default function StaffManagementPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Full Name</label>
-                            <Input value={newStaff.name} onChange={e => setNewStaff({...newStaff, name: e.target.value})} placeholder="Operator X" className="bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner" />
+                            <input value={newStaff.name} onChange={e => setNewStaff({...newStaff, name: e.target.value})} placeholder="Operator X" className="w-full bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all" />
                         </div>
                         <div className="space-y-2">
                              <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Role Permission</label>
                              <select 
                                 value={newStaff.role} 
                                 onChange={e => setNewStaff({...newStaff, role: e.target.value as any})}
-                                className="w-full bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner appearance-none cursor-pointer focus:ring-1 focus:ring-indigo-500/20"
+                                className="w-full bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner appearance-none cursor-pointer focus:ring-1 focus:ring-indigo-500/50 transition-all outline-none"
                              >
                                 <option value="waiter">Waiter</option>
                                 <option value="kitchen">Kitchen</option>
@@ -85,16 +85,37 @@ export default function StaffManagementPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                          <div className="space-y-2">
                              <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Registry Email</label>
-                             <Input value={newStaff.email} type="email" onChange={e => setNewStaff({...newStaff, email: e.target.value})} placeholder="node@scan4serve.com" className="bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner" />
+                             <input value={newStaff.email} type="email" onChange={e => setNewStaff({...newStaff, email: e.target.value})} placeholder="node@scan4serve.com" className="w-full bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all" />
                          </div>
                          <div className="space-y-2">
                              <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Master Login Key</label>
-                             <Input value={newStaff.password} type="password" onChange={e => setNewStaff({...newStaff, password: e.target.value})} placeholder="Initial Passphrase" className="bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner" />
+                             <input value={newStaff.password} type="password" onChange={e => setNewStaff({...newStaff, password: e.target.value})} placeholder="Initial Passphrase" className="w-full bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all" />
                          </div>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Profile Photo (Public Link)</label>
-                        <Input value={newStaff.profilePhoto as string} type="url" onChange={e => setNewStaff({...newStaff, profilePhoto: e.target.value})} placeholder="https://..." className="bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner" />
+                        <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Node Operator Signature (Photo)</label>
+                        <div className="flex gap-4 items-center bg-zinc-800/20 p-2 rounded-xl border border-white/5">
+                            {newStaff.profilePhoto ? (
+                                <img src={newStaff.profilePhoto as string} alt="Staff" className="w-14 h-14 rounded-xl object-cover ring-1 ring-white/10 shrink-0" />
+                            ) : (
+                                <div className="w-14 h-14 rounded-xl bg-zinc-800/50 flex items-center justify-center text-zinc-500 shrink-0"><Camera size={20} /></div>
+                            )}
+                            <div className="flex-1 relative">
+                                <input type="file" accept="image/*" id="staffPhotoUpload" className="hidden" onChange={(e) => {
+                                     const file = e.target.files?.[0];
+                                     if (file) {
+                                        if (file.size > 2 * 1024 * 1024) return toast.error('Image exceeds 2MB max boundary.');
+                                        const reader = new FileReader();
+                                        reader.onloadend = () => setNewStaff({ ...newStaff, profilePhoto: reader.result as string });
+                                        reader.readAsDataURL(file);
+                                     }
+                                }} />
+                                <label htmlFor="staffPhotoUpload" className="flex items-center justify-between w-full h-14 px-5 bg-zinc-800/40 rounded-xl hover:bg-zinc-700/50 transition-colors cursor-pointer border border-white/5 active:scale-[0.98]">
+                                    <span className="text-[10px] uppercase font-black tracking-widest italic text-zinc-400 truncate">{newStaff.profilePhoto ? 'Signature Captured ✓' : 'Upload Operator Image'}</span>
+                                    <Upload size={14} className="text-zinc-500" />
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     <Button type="submit" className="w-full h-16 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all text-sm shadow-xl shadow-indigo-600/20">
                          Verify & Commission Node

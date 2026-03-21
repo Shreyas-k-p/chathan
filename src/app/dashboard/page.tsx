@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useRestaurantStore, ManagedRestaurant } from '@/store/useRestaurantStore';
-import { TrendingUp, Users, ShoppingCart, DollarSign, ArrowUpRight, ArrowDownRight, Clock, ShieldCheck, Activity, Plus, Store, User, Phone, MapPin, Globe, ChevronRight, Navigation, Edit3, Trash2, Info, AlertTriangle, Map } from 'lucide-react';
+import { TrendingUp, Users, ShoppingCart, DollarSign, ArrowUpRight, ArrowDownRight, Clock, ShieldCheck, Activity, Plus, Store, User, Phone, MapPin, Globe, ChevronRight, Navigation, Edit3, Trash2, Info, AlertTriangle, Map, Camera, Upload } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -99,18 +99,39 @@ export default function DashboardPage() {
                         </DialogHeader>
                         <form onSubmit={handleCreateRestaurant} className="space-y-6">
                             <div className="space-y-4">
-                                <Input value={newRestaurant.name} onChange={e => setNewRestaurant({...newRestaurant, name: e.target.value})} placeholder="Restaurant Key Name" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
+                                <input value={newRestaurant.name} onChange={e => setNewRestaurant({...newRestaurant, name: e.target.value})} placeholder="Restaurant Key Name" className="w-full bg-zinc-900 border-none h-14 px-6 rounded-xl text-white font-black italic shadow-inner outline-none transition-all focus:ring-1 focus:ring-indigo-500/50" />
                                 <div className="grid grid-cols-2 gap-4">
-                                    <Input value={newRestaurant.managerName} onChange={e => setNewRestaurant({...newRestaurant, managerName: e.target.value})} placeholder="Node Manager Name" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
-                                    <Input value={newRestaurant.mobile} onChange={e => setNewRestaurant({...newRestaurant, mobile: e.target.value})} placeholder="Secure Phone" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
+                                    <input value={newRestaurant.managerName} onChange={e => setNewRestaurant({...newRestaurant, managerName: e.target.value})} placeholder="Node Manager Name" className="w-full bg-zinc-900 border-none h-14 px-6 rounded-xl text-white font-black italic shadow-inner outline-none transition-all focus:ring-1 focus:ring-indigo-500/50" />
+                                    <input value={newRestaurant.mobile} onChange={e => setNewRestaurant({...newRestaurant, mobile: e.target.value})} placeholder="Secure Phone" className="w-full bg-zinc-900 border-none h-14 px-6 rounded-xl text-white font-black italic shadow-inner outline-none transition-all focus:ring-1 focus:ring-indigo-500/50" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <Input value={newRestaurant.managerEmail as string} onChange={e => setNewRestaurant({...newRestaurant, managerEmail: e.target.value})} placeholder="Manager Login Email" type="email" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
-                                    <Input value={newRestaurant.managerPassword as string} onChange={e => setNewRestaurant({...newRestaurant, managerPassword: e.target.value})} placeholder="Initial Password" type="password" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
+                                    <input value={newRestaurant.managerEmail as string} onChange={e => setNewRestaurant({...newRestaurant, managerEmail: e.target.value})} placeholder="Manager Login Email" type="email" className="w-full bg-zinc-900 border-none h-14 px-6 rounded-xl text-white font-black italic shadow-inner outline-none transition-all focus:ring-1 focus:ring-indigo-500/50" />
+                                    <input value={newRestaurant.managerPassword as string} onChange={e => setNewRestaurant({...newRestaurant, managerPassword: e.target.value})} placeholder="Initial Password" type="password" className="w-full bg-zinc-900 border-none h-14 px-6 rounded-xl text-white font-black italic shadow-inner outline-none transition-all focus:ring-1 focus:ring-indigo-500/50" />
                                 </div>
-                                <Input value={newRestaurant.managerPhoto as string} onChange={e => setNewRestaurant({...newRestaurant, managerPhoto: e.target.value})} placeholder="Manager Profile Photo (URL Link)" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
+                                <div className="flex gap-4 items-center bg-zinc-900/50 p-2 rounded-xl">
+                                    {newRestaurant.managerPhoto ? (
+                                        <img src={newRestaurant.managerPhoto as string} alt="Manager" className="w-14 h-14 rounded-xl object-cover ring-1 ring-white/10 shrink-0" />
+                                    ) : (
+                                        <div className="w-14 h-14 rounded-xl bg-zinc-900 flex items-center justify-center text-zinc-600 shrink-0"><Camera size={20} /></div>
+                                    )}
+                                    <div className="flex-1 relative">
+                                        <input type="file" accept="image/*" id="managerPhotoUpload" className="hidden" onChange={(e) => {
+                                             const file = e.target.files?.[0];
+                                             if (file) {
+                                                if (file.size > 2 * 1024 * 1024) return toast.error('Image exceeds 2MB max boundary.');
+                                                const reader = new FileReader();
+                                                reader.onloadend = () => setNewRestaurant({ ...newRestaurant, managerPhoto: reader.result as string });
+                                                reader.readAsDataURL(file);
+                                             }
+                                        }} />
+                                        <label htmlFor="managerPhotoUpload" className="flex items-center justify-between w-full h-14 px-4 bg-zinc-800/40 rounded-xl hover:bg-zinc-800 transition-colors cursor-pointer border border-white/5 active:scale-[0.98]">
+                                            <span className="text-[10px] uppercase font-black tracking-widest italic text-zinc-400 truncate">{newRestaurant.managerPhoto ? 'Update Device Signature' : 'Attach Device Signature (Photo)'}</span>
+                                            <Upload size={14} className="text-zinc-500" />
+                                        </label>
+                                    </div>
+                                </div>
                                 <div className="relative flex gap-2">
-                                    <Input value={newRestaurant.location} onChange={e => setNewRestaurant({...newRestaurant, location: e.target.value})} placeholder="Location" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner flex-1" />
+                                    <input value={newRestaurant.location} onChange={e => setNewRestaurant({...newRestaurant, location: e.target.value})} placeholder="Location" className="w-full bg-zinc-900 border-none h-14 px-6 rounded-xl text-white font-black italic shadow-inner outline-none transition-all focus:ring-1 focus:ring-indigo-500/50 flex-1" />
                                     <Button type="button" onClick={() => { setMapTarget('create'); setIsMapOpen(true); }} variant="outline" className="h-14 w-14 rounded-xl border-zinc-800 bg-zinc-900 text-indigo-400 hover:text-white shrink-0"><Map size={20}/></Button>
                                 </div>
                             </div>
@@ -137,7 +158,12 @@ export default function DashboardPage() {
                             <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic truncate mb-4 drop-shadow-lg w-full">{res.name}</h3>
                             <div className="space-y-3 opacity-80 w-full">
                                 <p className="text-[10px] font-black text-zinc-400 uppercase italic tracking-widest flex items-center gap-2 group-hover:text-zinc-200 transition-colors w-full overflow-hidden">
-                                    <User size={12} className="text-indigo-400 shrink-0" /> <span className="truncate">{res.managerName}</span>
+                                    {res.managerPhoto ? (
+                                        <img src={res.managerPhoto} className="w-4 h-4 rounded-full object-cover shrink-0" alt="Manager" />
+                                    ) : (
+                                        <User size={12} className="text-indigo-400 shrink-0" /> 
+                                    )}
+                                    <span className="truncate">{res.managerName}</span>
                                 </p>
                                 <p className="text-[10px] font-black text-zinc-400 uppercase italic tracking-widest flex items-center gap-2 group-hover:text-zinc-200 transition-colors w-full overflow-hidden">
                                     <MapPin size={12} className="text-indigo-400 shrink-0" /> <span className="truncate">{res.location}</span>
@@ -266,8 +292,12 @@ export default function DashboardPage() {
                                     ].map((row, i) => (
                                         <div key={i} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 bg-zinc-900/20 rounded-3xl border border-white/[0.02] hover:bg-zinc-900/40 transition-all group gap-4 overflow-hidden">
                                             <div className="flex items-center gap-6 shrink-0">
-                                                <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center text-indigo-400 group-hover:text-white transition-colors">
-                                                    <row.icon size={18} />
+                                                <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center text-indigo-400 group-hover:text-white transition-colors overflow-hidden">
+                                                    {row.label === 'Managed By' && selectedRestaurant.managerPhoto ? (
+                                                        <img src={selectedRestaurant.managerPhoto} alt="Manager" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <row.icon size={18} />
+                                                    )}
                                                 </div>
                                                 <span className="text-zinc-500 font-black uppercase italic text-[10px] tracking-widest">{row.label}</span>
                                             </div>
