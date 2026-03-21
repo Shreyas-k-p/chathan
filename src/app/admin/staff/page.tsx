@@ -14,21 +14,21 @@ export default function StaffManagementPage() {
   const { user } = useAuthStore();
   const { staff, addStaff, removeStaff, syncMatrix } = useRestaurantStore();
   const [isAdding, setIsAdding] = useState(false);
-  const [newStaff, setNewStaff] = useState({ name: '', email: '', role: 'waiter' as any });
+  const [newStaff, setNewStaff] = useState({ name: '', email: '', role: 'waiter' as any, password: '' });
 
   useEffect(() => { syncMatrix(); }, []);
 
-  const canAddSubManager = user?.role === 'super_admin' || user?.role === 'manager';
+  const canAddSubManager = user?.role === 'SUPER_ADMIN' || user?.role === 'MANAGER';
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newStaff.name || !newStaff.email) return toast.error('Incomplete staff dossier.');
+    if (!newStaff.name || !newStaff.email || !newStaff.password) return toast.error('Incomplete staff dossier (missing fields or key).');
     
     if (newStaff.role === 'restaurant_admin' && !canAddSubManager) {
         return toast.error('Security Violation: Unauthorized to commission Sub-Manager level nodes.');
     }
 
-    const member: Staff = {
+    const member: Staff & { password?: string } = {
       id: `s-${Date.now()}`,
       ...newStaff,
       status: 'offline'
@@ -36,7 +36,7 @@ export default function StaffManagementPage() {
     
     addStaff(member);
     setIsAdding(false);
-    setNewStaff({ name: '', email: '', role: 'waiter' });
+    setNewStaff({ name: '', email: '', role: 'waiter', password: '' });
     toast.success(`${member.name} registered to platform network.`);
   };
 
@@ -82,9 +82,15 @@ export default function StaffManagementPage() {
                              </select>
                         </div>
                     </div>
-                    <div className="space-y-2">
-                         <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Registry Email</label>
-                         <Input value={newStaff.email} type="email" onChange={e => setNewStaff({...newStaff, email: e.target.value})} placeholder="node@scan4serve.com" className="bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         <div className="space-y-2">
+                             <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Registry Email</label>
+                             <Input value={newStaff.email} type="email" onChange={e => setNewStaff({...newStaff, email: e.target.value})} placeholder="node@scan4serve.com" className="bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner" />
+                         </div>
+                         <div className="space-y-2">
+                             <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Master Login Key</label>
+                             <Input value={newStaff.password} type="password" onChange={e => setNewStaff({...newStaff, password: e.target.value})} placeholder="Initial Passphrase" className="bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner" />
+                         </div>
                     </div>
                     <Button type="submit" className="w-full h-16 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all text-sm shadow-xl shadow-indigo-600/20">
                          Verify & Commission Node
@@ -121,8 +127,19 @@ export default function StaffManagementPage() {
             </div>
 
             <div className="mt-8 flex gap-3">
-                <Button variant="ghost" className="flex-1 h-12 bg-zinc-900 hover:bg-zinc-800 text-zinc-500 hover:text-white rounded-xl font-black uppercase text-[10px] tracking-widest italic transition-all">Audit</Button>
-                {member.role !== 'super_admin' && (
+                {canAddSubManager && (
+                    <Button onClick={async () => {
+                         const newKey = window.prompt("Enter new master login key for " + member.name + ":");
+                         if (!newKey) return;
+                         try {
+                           const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+                           const res = await fetch(`${apiUrl}/staff/reset/${member.id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ newPassword: newKey }) });
+                           if (res.ok) toast.success(`Login key manually reset for ${member.name}`);
+                           else toast.error('Matrix failure: Unable to reset key');
+                         } catch (e) { toast.error('Connection error.'); }
+                    }} variant="ghost" className="flex-1 h-12 bg-zinc-900 hover:bg-zinc-800 text-indigo-400 hover:text-indigo-300 rounded-xl font-black uppercase text-[9px] tracking-widest italic transition-all ring-1 ring-indigo-500/20">Reset Login Key</Button>
+                )}
+                {((member.role as string) !== 'super_admin' && (member.role as string) !== 'SUPER_ADMIN') && (
                     <Button 
                         onClick={() => {
                             removeStaff(member.id);
@@ -136,7 +153,7 @@ export default function StaffManagementPage() {
                 )}
             </div>
             
-            {(member.role === 'manager' || member.role === 'restaurant_admin') && (
+            {((member.role as string) === 'manager' || (member.role as string) === 'restaurant_admin' || (member.role as string) === 'SUB_MANAGER' || (member.role as string) === 'MANAGER') && (
                 <div className="absolute top-4 right-4">
                     <Star size={16} className="text-amber-500/20" fill="currentColor" />
                 </div>

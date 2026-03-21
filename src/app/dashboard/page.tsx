@@ -34,7 +34,7 @@ const StatCard = ({ icon: Icon, label, value, trend, trendUp, color }: any) => (
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const { orders, menuItems, managedRestaurants, addManagedRestaurant, updateManagedRestaurant, syncMatrix } = useRestaurantStore();
-  const [newRestaurant, setNewRestaurant] = useState({ name: '', managerName: '', mobile: '', location: '' });
+  const [newRestaurant, setNewRestaurant] = useState({ name: '', managerName: '', mobile: '', location: '', managerEmail: '', managerPassword: '' });
   const [editingRestaurant, setEditingRestaurant] = useState<ManagedRestaurant | null>(null);
   const [selectedRestaurant, setSelectedRestaurant] = useState<ManagedRestaurant | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -50,7 +50,7 @@ export default function DashboardPage() {
     if (!newRestaurant.name || !newRestaurant.managerName) return toast.error('Registry Payload Incomplete');
     const restaurant: ManagedRestaurant = { id: `r-${Date.now()}`, ...newRestaurant, status: 'active', createdAt: 'Recently Deployed', valuation: '₹0', staffCount: 0 };
     addManagedRestaurant(restaurant);
-    setNewRestaurant({ name: '', managerName: '', mobile: '', location: '' });
+    setNewRestaurant({ name: '', managerName: '', mobile: '', location: '', managerEmail: '', managerPassword: '' });
     setIsCreateOpen(false);
     toast.success('SYNC: New Restaurant Node Active');
   };
@@ -100,16 +100,20 @@ export default function DashboardPage() {
                         <form onSubmit={handleCreateRestaurant} className="space-y-6">
                             <div className="space-y-4">
                                 <Input value={newRestaurant.name} onChange={e => setNewRestaurant({...newRestaurant, name: e.target.value})} placeholder="Restaurant Key Name" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
-                                <Input value={newRestaurant.managerName} onChange={e => setNewRestaurant({...newRestaurant, managerName: e.target.value})} placeholder="Node Manager Name" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
                                 <div className="grid grid-cols-2 gap-4">
+                                    <Input value={newRestaurant.managerName} onChange={e => setNewRestaurant({...newRestaurant, managerName: e.target.value})} placeholder="Node Manager Name" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
                                     <Input value={newRestaurant.mobile} onChange={e => setNewRestaurant({...newRestaurant, mobile: e.target.value})} placeholder="Secure Phone" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
-                                    <div className="relative flex gap-2">
-                                        <Input value={newRestaurant.location} onChange={e => setNewRestaurant({...newRestaurant, location: e.target.value})} placeholder="Location" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner flex-1" />
-                                        <Button type="button" onClick={() => { setMapTarget('create'); setIsMapOpen(true); }} variant="outline" className="h-14 w-14 rounded-xl border-zinc-800 bg-zinc-900 text-indigo-400 hover:text-white shrink-0"><Map size={20}/></Button>
-                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Input value={newRestaurant.managerEmail as string} onChange={e => setNewRestaurant({...newRestaurant, managerEmail: e.target.value})} placeholder="Manager Login Email" type="email" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
+                                    <Input value={newRestaurant.managerPassword as string} onChange={e => setNewRestaurant({...newRestaurant, managerPassword: e.target.value})} placeholder="Initial Password" type="password" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
+                                </div>
+                                <div className="relative flex gap-2">
+                                    <Input value={newRestaurant.location} onChange={e => setNewRestaurant({...newRestaurant, location: e.target.value})} placeholder="Location" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner flex-1" />
+                                    <Button type="button" onClick={() => { setMapTarget('create'); setIsMapOpen(true); }} variant="outline" className="h-14 w-14 rounded-xl border-zinc-800 bg-zinc-900 text-indigo-400 hover:text-white shrink-0"><Map size={20}/></Button>
                                 </div>
                             </div>
-                            <Button type="submit" className="w-full h-16 bg-white text-black hover:bg-zinc-100 font-black uppercase italic tracking-widest rounded-2xl active:scale-95 transition-all text-sm gap-4">COMMIT DEPLOYMENT</Button>
+                            <Button type="submit" className="w-full h-16 bg-white text-black hover:bg-zinc-100 font-black uppercase italic tracking-widest rounded-2xl active:scale-95 transition-all text-sm gap-4">COMMIT DEPLOYMENT & GENERATE LOGIN</Button>
                         </form>
                     </DialogContent>
                 </Dialog>

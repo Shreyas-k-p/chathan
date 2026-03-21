@@ -104,18 +104,47 @@ app.post("/api/announcements", authShield(["SUPER_ADMIN", "MANAGER", "SUB_MANAGE
 // SaaS Matrix: Multi-Restaurant Hub
 app.get("/api/restaurants", async (req,res)=> res.json(await Restaurant.find()));
 app.post("/api/restaurants", async (req,res)=> {
-    try { res.json(await Restaurant.create(req.body)); } 
+    try { 
+      const restaurant = await Restaurant.create(req.body); 
+      // Mint Manager Identity implicitly
+      if (req.body.managerEmail && req.body.managerPassword) {
+         const hashedPassword = await bcrypt.hash(req.body.managerPassword, 10);
+         await User.create({ name: restaurant.managerName, email: req.body.managerEmail, password: hashedPassword, role: 'MANAGER', restaurantId: restaurant._id });
+      }
+      res.json(restaurant);
+    } 
     catch(err) { res.status(500).json({ error: err.message }); }
 });
 
 // Node-Isolated Staff Logic
 app.get("/api/staff", async (req,res)=> res.json(await Staff.find().sort({ createdAt: -1 })));
 app.post("/api/staff", async (req,res)=> {
-    try { res.json(await Staff.create(req.body)); } 
+    try { 
+      const staff = await Staff.create(req.body); 
+      // Link to Master User Matrix if credentials passed
+      if (req.body.email && req.body.password) {
+         const hashedPassword = await bcrypt.hash(req.body.password, 10);
+         const normalizedRole = req.body.role === 'kitchen' ? 'KITCHEN' : req.body.role === 'waiter' ? 'WAITER' : req.body.role === 'restaurant_admin' ? 'SUB_MANAGER' : 'MANAGER';
+         await User.create({ name: staff.name, email: req.body.email, password: hashedPassword, role: normalizedRole, restaurantId: req.user ? req.user.restaurantId : staff.restaurantId });
+      }
+      res.json(staff);
+    } 
     catch(err) { res.status(500).json({ error: err.message }); }
 });
 app.put("/api/staff/photo/:id", async (req,res)=> res.json(await Staff.findByIdAndUpdate(req.params.id, { profilePhoto: req.body.profilePhoto }, { new: true })));
 app.delete("/api/staff/:id", async (req, res)=> res.json(await Staff.findByIdAndDelete(req.params.id)));
+
+// Reset Staff Password Logic
+app.post("/api/staff/reset/:id", async (req,res)=> {
+    try {
+        const staff = await Staff.findById(req.params.id);
+        if (!staff) return res.status(404).json({ error: "Staff Node Not Found" });
+        
+        const newHashed = await bcrypt.hash(req.body.newPassword, 10);
+        await User.findOneAndUpdate({ email: staff.email }, { password: newHashed });
+        res.json({ success: true });
+    } catch(err) { res.status(500).json({ error: err.message }); }
+});
 
 
 // Node-Isolated Menu Logic
