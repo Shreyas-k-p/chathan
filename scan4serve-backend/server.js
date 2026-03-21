@@ -15,7 +15,7 @@ const Table = require("./models/Table");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: '*' }));
 
 // 📡 PRODUCTION HEALTH CHECK Node
 app.get("/", (req, res) => res.send("📡 Scan4Serve Matrix Engine v5.0 [PRODUCTION_BLDR] Online"));

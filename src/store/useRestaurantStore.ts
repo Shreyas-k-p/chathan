@@ -123,7 +123,7 @@ export const useRestaurantStore = create<RestaurantState>()(
       updateManagedRestaurant: (id, updates) => set((state) => ({ managedRestaurants: state.managedRestaurants.map(r => r.id === id ? { ...r, ...updates } : r) })),
 
       syncMatrix: async () => {
-        const apiUrl = 'http://localhost:5000';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         try {
           const resData = await fetch(`${apiUrl}/restaurants`).then(r => r.json());
           if (Array.isArray(resData)) set({ managedRestaurants: resData.map(r => ({ ...r, id: r._id || r.id })) });

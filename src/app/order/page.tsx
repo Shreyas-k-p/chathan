@@ -53,10 +53,11 @@ export default function OrderPage({ searchParams }: { searchParams: { restaurant
   // Real-time synchronization with Backend Matrix
   useEffect(() => {
     if (!currentOrder?._id) return;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
     const syncInterval = setInterval(async () => {
       try {
-        const res = await fetch(`http://localhost:5000/order/${currentOrder._id}`);
+        const res = await fetch(`${apiUrl}/order/${currentOrder._id}`);
         const data = await res.json();
         
         if (data && data.status !== currentOrder?.status) {
@@ -74,9 +75,10 @@ export default function OrderPage({ searchParams }: { searchParams: { restaurant
 
   const placeOrder = async () => {
     if (cart.length === 0) return toast.error('No assets in tray');
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     
     try {
-      const response = await fetch("http://localhost:5000/order", {
+      const response = await fetch(`${apiUrl}/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -128,9 +130,10 @@ export default function OrderPage({ searchParams }: { searchParams: { restaurant
 
   const handleCancelOrder = async () => {
     if (!currentOrder) return;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     
     try {
-      const response = await fetch(`http://localhost:5000/order/cancel/${currentOrder._id}`, {
+      const response = await fetch(`${apiUrl}/order/cancel/${currentOrder._id}`, {
         method: "PUT"
       });
       const data = await response.json();
