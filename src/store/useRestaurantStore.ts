@@ -179,25 +179,31 @@ export const useRestaurantStore = create<RestaurantState>()(
 
       syncMatrix: async () => {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        
         try {
           const resData = await fetch(`${apiUrl}/restaurants`).then(r => r.json());
           if (Array.isArray(resData)) set({ managedRestaurants: resData.map(r => ({ ...r, id: r._id || r.id })) });
-          
+        } catch(e) { console.error('Matrix Hub: Failed to map Restaurants'); }
+        
+        try {
           const orderData = await fetch(`${apiUrl}/orders/ALL`).then(r => r.json());
           if (Array.isArray(orderData)) set({ orders: orderData });
-
+        } catch(e) { console.error('Matrix Hub: Failed to map Orders'); }
+        
+        try {
           const menuData = await fetch(`${apiUrl}/menu/ALL`).then(r => r.json());
           if (Array.isArray(menuData)) set({ menuItems: menuData });
-
+        } catch(e) { console.error('Matrix Hub: Failed to map Menu Items'); }
+        
+        try {
           const staffData = await fetch(`${apiUrl}/staff`).then(r => r.json());
-          if (Array.isArray(staffData)) set({ staff: staffData.map(s => ({...s, id: s._id})) });
-
+          if (Array.isArray(staffData)) set({ staff: staffData.map(s => ({...s, id: s._id || s.id})) });
+        } catch(e) { console.error('Matrix Hub: Failed to map Staff'); }
+        
+        try {
           const announcementsData = await fetch(`${apiUrl}/announcements`).then(r => r.json());
           if (Array.isArray(announcementsData)) set({ announcements: announcementsData });
-
-        } catch (e) { 
-          console.error('Matrix Hub: Sync Terminal Failure - Switching to Node Cache', e);
-        }
+        } catch(e) { console.error('Matrix Hub: Failed to map Announcements'); }
       }
     }),
     {

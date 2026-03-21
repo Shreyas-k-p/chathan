@@ -113,11 +113,17 @@ app.delete("/api/staff/:id", async (req, res)=> res.json(await Staff.findByIdAnd
 
 
 // Node-Isolated Menu Logic
-app.get("/api/menu/:restaurantId", async (req,res)=> res.json(await MenuItem.find({ restaurantId: req.params.restaurantId })));
+app.get("/api/menu/:restaurantId", async (req,res)=> {
+  if (req.params.restaurantId === 'ALL') return res.json(await MenuItem.find());
+  res.json(await MenuItem.find({ restaurantId: req.params.restaurantId }));
+});
 app.post("/api/menu", authShield(["MANAGER", "SUPER_ADMIN"]), async (req,res)=> res.json(await MenuItem.create({...req.body, restaurantId: req.user.restaurantId})));
 
 // Node-Isolated Orders
-app.get("/api/orders/:restaurantId", async (req,res)=> res.json(await Order.find({ restaurantId: req.params.restaurantId }).sort({ createdAt: -1 })));
+app.get("/api/orders/:restaurantId", async (req,res)=> {
+  if (req.params.restaurantId === 'ALL') return res.json(await Order.find().sort({ createdAt: -1 }));
+  res.json(await Order.find({ restaurantId: req.params.restaurantId }).sort({ createdAt: -1 }));
+});
 
 app.post("/api/order", async (req,res)=>{
   try{
