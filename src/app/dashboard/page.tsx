@@ -124,23 +124,23 @@ export default function DashboardPage() {
                 {managedRestaurants.map((res) => (
                     <Card key={res.id} className="border-none shadow-2xl bg-zinc-900/40 backdrop-blur-3xl ring-1 ring-white/5 p-8 rounded-[3rem] group hover:scale-[1.03] transition-all duration-500 hover:ring-indigo-500/20 overflow-hidden relative">
                          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/5 blur-[60px] group-hover:bg-indigo-600/10 transition-colors" />
-                         <div className="flex justify-between items-start mb-8 relative z-10">
-                            <div className="w-16 h-16 rounded-[1.5rem] bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-black text-2xl shadow-xl ring-1 ring-indigo-500/20 italic transform group-hover:rotate-6 transition-transform">
+                         <div className="flex justify-between items-start mb-8 relative z-10 gap-4">
+                            <div className="w-16 h-16 rounded-[1.5rem] bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-black text-2xl shadow-xl ring-1 ring-indigo-500/20 italic transform group-hover:rotate-6 transition-transform shrink-0">
                                 {res.name[0]}
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 shrink-0">
                                 <Button size="icon" variant="ghost" className="w-10 h-10 rounded-xl bg-white/5 text-zinc-400 hover:text-indigo-400 hover:bg-zinc-800/50 transition-all" onClick={() => { setEditingRestaurant(res); setIsEditOpen(true); }}><Edit3 size={16} /></Button>
                                 <Badge variant="outline" className="bg-emerald-500/10 border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase px-3 py-1 rounded-full italic shadow-sm">{res.status}</Badge>
                             </div>
                          </div>
-                         <div className="relative z-10 cursor-pointer" onClick={() => { setSelectedRestaurant(res); setIsDetailOpen(true); }}>
-                            <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic truncate mb-4 drop-shadow-lg">{res.name}</h3>
-                            <div className="space-y-3 opacity-80">
-                                <p className="text-[10px] font-black text-zinc-400 uppercase italic tracking-widest flex items-center gap-2 group-hover:text-zinc-200 transition-colors">
-                                    <User size={12} className="text-indigo-400" /> {res.managerName}
+                         <div className="relative z-10 cursor-pointer w-full overflow-hidden" onClick={() => { setSelectedRestaurant(res); setIsDetailOpen(true); }}>
+                            <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic truncate mb-4 drop-shadow-lg w-full">{res.name}</h3>
+                            <div className="space-y-3 opacity-80 w-full">
+                                <p className="text-[10px] font-black text-zinc-400 uppercase italic tracking-widest flex items-center gap-2 group-hover:text-zinc-200 transition-colors w-full overflow-hidden">
+                                    <User size={12} className="text-indigo-400 shrink-0" /> <span className="truncate">{res.managerName}</span>
                                 </p>
-                                <p className="text-[10px] font-black text-zinc-400 uppercase italic tracking-widest flex items-center gap-2 group-hover:text-zinc-200 transition-colors">
-                                    <MapPin size={12} className="text-indigo-400" /> {res.location}
+                                <p className="text-[10px] font-black text-zinc-400 uppercase italic tracking-widest flex items-center gap-2 group-hover:text-zinc-200 transition-colors w-full overflow-hidden">
+                                    <MapPin size={12} className="text-indigo-400 shrink-0" /> <span className="truncate">{res.location}</span>
                                 </p>
                             </div>
                          </div>
@@ -235,27 +235,27 @@ export default function DashboardPage() {
                                 <div className="absolute top-8 right-8 flex gap-2">
                                     <Badge className="bg-indigo-500/20 text-indigo-400 border-indigo-500/30 uppercase italic px-5 py-2 rounded-full font-black text-[10px] tracking-widest shadow-2xl backdrop-blur-xl">MATRIX NODE: {selectedRestaurant.id.split('-').pop()?.toUpperCase()}</Badge>
                                 </div>
-                                <div className="text-center relative z-10">
-                                    <div className="w-24 h-24 rounded-[2.5rem] bg-white text-black flex items-center justify-center font-black text-5xl shadow-[0_0_50px_rgba(255,255,255,0.15)] italic mx-auto mb-6 transform hover:rotate-12 transition-transform">{selectedRestaurant.name[0]}</div>
-                                    <h2 className="text-5xl font-black text-white tracking-tighter uppercase italic drop-shadow-2xl">{selectedRestaurant.name}</h2>
+                                <div className="text-center relative z-10 w-full px-6 overflow-hidden">
+                                    <div className="w-24 h-24 rounded-[2.5rem] bg-white text-black flex items-center justify-center font-black text-5xl shadow-[0_0_50px_rgba(255,255,255,0.15)] italic mx-auto mb-6 transform hover:rotate-12 transition-transform shrink-0">{selectedRestaurant.name[0]}</div>
+                                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter uppercase italic drop-shadow-2xl w-full truncate">{selectedRestaurant.name}</h2>
                                     <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.5em] mt-3 italic">Autonomous Operational Hub</p>
                                 </div>
                             </div>
-                            <div className="p-10 space-y-12">
-                                <div className="grid grid-cols-2 gap-8">
-                                    <div className="bg-zinc-900/40 p-8 rounded-[2.2rem] border border-white/[0.03] shadow-inner group/stat hover:border-emerald-500/20 transition-all">
+                            <div className="p-6 md:p-10 space-y-12">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                                    <div className="bg-zinc-900/40 p-6 md:p-8 rounded-[2.2rem] border border-white/[0.03] shadow-inner group/stat hover:border-emerald-500/20 transition-all overflow-hidden">
                                         <div className="flex justify-between items-center mb-4">
-                                            <p className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.4em] italic">Net valuation</p>
-                                            <TrendingUp size={14} className="text-emerald-500" />
+                                            <p className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.4em] italic whitespace-nowrap">Net valuation</p>
+                                            <TrendingUp size={14} className="text-emerald-500 shrink-0" />
                                         </div>
-                                        <p className="text-4xl font-black text-emerald-400 italic font-mono drop-shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:scale-110 transition-transform origin-left">{selectedRestaurant.valuation || '₹0'}</p>
+                                        <p className="text-3xl md:text-4xl font-black text-emerald-400 italic font-mono drop-shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:scale-105 transition-transform origin-left truncate w-full">{selectedRestaurant.valuation || '₹0'}</p>
                                     </div>
-                                    <div className="bg-zinc-900/40 p-8 rounded-[2.2rem] border border-white/[0.03] shadow-inner group/stat hover:border-indigo-500/20 transition-all">
+                                    <div className="bg-zinc-900/40 p-6 md:p-8 rounded-[2.2rem] border border-white/[0.03] shadow-inner group/stat hover:border-indigo-500/20 transition-all overflow-hidden">
                                         <div className="flex justify-between items-center mb-4">
-                                            <p className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.4em] italic">Personnel deploy</p>
-                                            <Users size={14} className="text-indigo-500" />
+                                            <p className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.4em] italic whitespace-nowrap">Personnel deploy</p>
+                                            <Users size={14} className="text-indigo-500 shrink-0" />
                                         </div>
-                                        <p className="text-4xl font-black text-indigo-400 italic font-mono drop-shadow-[0_0_15_rgba(99,102,241,0.3)] group-hover:scale-110 transition-transform origin-left">{selectedRestaurant.staffCount || 0}</p>
+                                        <p className="text-3xl md:text-4xl font-black text-indigo-400 italic font-mono drop-shadow-[0_0_15_rgba(99,102,241,0.3)] group-hover:scale-105 transition-transform origin-left w-full truncate">{selectedRestaurant.staffCount || 0}</p>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
@@ -264,25 +264,25 @@ export default function DashboardPage() {
                                         { label: 'Secure Contact', value: selectedRestaurant.mobile, icon: Phone },
                                         { label: 'SaaS Registry', value: selectedRestaurant.status.toUpperCase(), icon: Globe },
                                     ].map((row, i) => (
-                                        <div key={i} className="flex items-center justify-between p-6 bg-zinc-900/20 rounded-3xl border border-white/[0.02] hover:bg-zinc-900/40 transition-all group">
-                                            <div className="flex items-center gap-6">
+                                        <div key={i} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 bg-zinc-900/20 rounded-3xl border border-white/[0.02] hover:bg-zinc-900/40 transition-all group gap-4 overflow-hidden">
+                                            <div className="flex items-center gap-6 shrink-0">
                                                 <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center text-indigo-400 group-hover:text-white transition-colors">
                                                     <row.icon size={18} />
                                                 </div>
                                                 <span className="text-zinc-500 font-black uppercase italic text-[10px] tracking-widest">{row.label}</span>
                                             </div>
-                                            <div className="text-white font-black uppercase italic tracking-tight">{row.value}</div>
+                                            <div className="text-white font-black uppercase italic tracking-tight text-right w-full sm:w-auto truncate">{row.value}</div>
                                         </div>
                                     ))}
-                                    <div className="flex items-center justify-between p-6 bg-zinc-900/20 rounded-3xl border border-white/[0.02] hover:bg-zinc-900/40 transition-all group">
-                                        <div className="flex items-center gap-6">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 bg-zinc-900/20 rounded-3xl border border-white/[0.02] hover:bg-zinc-900/40 transition-all group gap-4 overflow-hidden">
+                                        <div className="flex items-center gap-6 shrink-0">
                                             <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center text-emerald-400">
                                                 <MapPin size={18} />
                                             </div>
                                             <span className="text-zinc-500 font-black uppercase italic text-[10px] tracking-widest">Node Location</span>
                                         </div>
-                                        <Button variant="ghost" className="h-10 text-emerald-400 hover:text-white hover:bg-emerald-500/10 rounded-xl text-[10px] font-black uppercase italic tracking-widest gap-3" onClick={() => openInGoogleMaps(selectedRestaurant.location)}>
-                                            {selectedRestaurant.location.toUpperCase()} <Navigation size={14} />
+                                        <Button variant="ghost" className="h-10 text-emerald-400 hover:text-white hover:bg-emerald-500/10 rounded-xl text-[10px] font-black uppercase italic tracking-widest gap-2 max-w-full overflow-hidden" onClick={() => openInGoogleMaps(selectedRestaurant.location)}>
+                                            <span className="truncate">{selectedRestaurant.location.toUpperCase()}</span> <Navigation size={14} className="shrink-0" />
                                         </Button>
                                     </div>
                                 </div>
