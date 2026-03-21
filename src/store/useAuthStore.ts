@@ -5,18 +5,17 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  role: 'super_admin' | 'restaurant_admin' | 'manager' | 'sub_manager' | 'waiter' | 'kitchen';
-  restaurant?: {
-    _id: string;
-    name: string;
-    slug: string;
-  };
+  role: 'SUPER_ADMIN' | 'MANAGER' | 'WAITER' | 'KITCHEN';
+  restaurantId?: string; // Link to the restaurant node
   token: string;
+  profilePhoto?: string; 
 }
 
 interface AuthState {
   user: User | null;
+  token: string | null;
   setUser: (user: User | null) => void;
+  setToken: (token: string | null) => void;
   logout: () => void;
 }
 
@@ -24,11 +23,16 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
+      token: null,
       setUser: (user) => set({ user }),
-      logout: () => set({ user: null }),
+      setToken: (token) => set({ token }),
+      logout: () => {
+          set({ user: null, token: null });
+          localStorage.removeItem('scan4serve-auth-token');
+      },
     }),
     {
-      name: 'scan4serve-auth',
+      name: 'scan4serve-auth-hub',
     }
   )
 );
