@@ -34,7 +34,7 @@ export default function AnnouncementsPage() {
     const announcement: Announcement = {
       id: `a-${Date.now()}`,
       ...newMsg,
-      author: user?.role === 'manager' ? 'MANAGER' : user?.role === 'super_admin' ? 'SYSTEM ADM' : 'COORD',
+      author: user?.role === 'MANAGER' ? 'MANAGER' : user?.role === 'SUPER_ADMIN' ? 'SYSTEM ADM' : 'COORD',
       time: 'Just now'
     };
     
