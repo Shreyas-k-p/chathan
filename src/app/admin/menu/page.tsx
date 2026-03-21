@@ -19,7 +19,8 @@ export default function MenuManagement() {
   useEffect(() => { syncMatrix(); }, []);
 
   // Filter items by current restaurant node
-  const filteredItems = menuItems.filter(i => i.restaurantId === user?.restaurant?._id);
+  const filteredItems = menuItems.filter(i => i.restaurantId === user?.restaurantId);
+  const activeRestaurantName = useRestaurantStore(state => state.managedRestaurants.find(r => r.id === user?.restaurantId || r._id === user?.restaurantId))?.name;
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +29,8 @@ export default function MenuManagement() {
     const item: MenuItem = { 
         ...newItem, 
         _id: `m-${Date.now()}`, 
-        restaurantId: user?.restaurant?._id // Link to specific node
+        restaurantId: user?.restaurantId, // Link to specific node
+        isAvailable: true
     };
     
     addMenuItem(item);
@@ -45,8 +47,8 @@ export default function MenuManagement() {
             <Zap size={32} className="text-indigo-500 md:w-12 md:h-12 shrink-0" />
             Selection Engine
           </h1>
-          <div className="text-indigo-400 font-black uppercase text-[10px] tracking-[0.4em] mt-3 flex items-center gap-2 italic">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]" /> Digital Core Active • Node: {user?.restaurant?.name?.toUpperCase() || 'EXTERNAL'}
+          <div className="text-indigo-400 font-black uppercase text-[10px] tracking-[0.4em] mt-3 flex items-center gap-2 italic w-full truncate">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981] shrink-0" /> Digital Core Active • Node: {activeRestaurantName?.toUpperCase() || user?.restaurantId?.slice(-6).toUpperCase() || 'EXTERNAL'}
           </div>
         </div>
         <div className="flex">

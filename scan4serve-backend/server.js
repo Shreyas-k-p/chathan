@@ -102,7 +102,29 @@ app.post("/api/announcements", authShield(["SUPER_ADMIN", "MANAGER", "SUB_MANAGE
 });
 
 // SaaS Matrix: Multi-Restaurant Hub
-app.get("/api/restaurants", async (req,res)=> res.json(await Restaurant.find()));
+app.get("/api/restaurants", async (req,res)=> {
+    try {
+        const dbRestaurants = await Restaurant.find();
+        if (dbRestaurants.length === 0) {
+            return res.json([{
+                _id: "demo12345678901234567890",
+                name: "Demo Restaurant",
+                location: "SNMIMT",
+                managerName: "Demo User",
+                managerEmail: "demo@scan4serve.com",
+                mobile: "+91 0000000000",
+                status: "active",
+                managerPhoto: "https://via.placeholder.com/150",
+                valuation: "₹1,000,000",
+                staffCount: 5,
+                createdAt: new Date().toISOString()
+            }]);
+        }
+        res.json(dbRestaurants);
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 app.post("/api/restaurants", async (req,res)=> {
     try { 
       const restaurant = await Restaurant.create(req.body); 
