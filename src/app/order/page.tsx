@@ -3,7 +3,7 @@
 import React, { useState, useEffect, use, useRef } from 'react';
 import axios from 'axios';
 import { useOrderStore } from '@/store/useOrderStore';
-import { useRestaurantStore, playCriticalSound } from '@/store/useRestaurantStore';
+import { useRestaurantStore, playAlertSound } from '@/store/useRestaurantStore';
 import { ShoppingCart, Utensils, Search, Plus, Minus, X, CheckCircle, Clock, Wifi, WifiOff, Star, Zap, Cake, Gift, Heart, Info, Edit, Trash2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,11 +11,10 @@ import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 
-export default function OrderPage({ searchParams }: { searchParams: Promise<{ restaurantId: string; tableId: string }> }) {
-  const params = use(searchParams);
-  const { restaurantId, tableId } = params;
+export default function OrderPage({ searchParams }: { searchParams: { restaurantId: string; tableId: string } }) {
+  const { restaurantId, tableId } = searchParams;
   const { cart, addItem, clearCart, updateQty, updateInstructions, setTable, currentOrder, setOrder, specialEvent, setSpecialEvent } = useOrderStore();
-  const { menuItems, orders, addOrder, cancelOrder, seed } = useRestaurantStore();
+  const { menuItems, orders, addOrder, cancelOrder, syncMatrix } = useRestaurantStore();
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -31,13 +30,13 @@ export default function OrderPage({ searchParams }: { searchParams: Promise<{ re
             description: 'The kitchen has removed an unavailable item from your mission. Total valuation adjusted.',
             duration: 10000,
         });
-        playCriticalSound();
+        playAlertSound();
     }
     prevItemsCount.current = liveOrder?.items.length || 0;
   }, [liveOrder?.items.length]);
 
   useEffect(() => {
-    seed();
+    syncMatrix();
     if (restaurantId && tableId) {
       setTable(restaurantId, tableId);
     }
