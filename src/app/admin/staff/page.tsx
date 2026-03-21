@@ -12,11 +12,11 @@ import { toast } from 'sonner';
 
 export default function StaffManagementPage() {
   const { user } = useAuthStore();
-  const { staff, addStaff, removeStaff, seed } = useRestaurantStore();
+  const { staff, addStaff, removeStaff, syncMatrix } = useRestaurantStore();
   const [isAdding, setIsAdding] = useState(false);
   const [newStaff, setNewStaff] = useState({ name: '', email: '', role: 'waiter' as any });
 
-  useEffect(() => { seed(); }, []);
+  useEffect(() => { syncMatrix(); }, []);
 
   const canAddSubManager = user?.role === 'super_admin' || user?.role === 'manager';
 

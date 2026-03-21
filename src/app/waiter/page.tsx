@@ -38,10 +38,10 @@ const StatCard = ({ icon: Icon, label, value, trend, color }: any) => (
 );
 
 export default function WaiterConsole() {
-  const { orders, tables, updateOrderStatus, seed } = useRestaurantStore();
+  const { orders, tables, updateOrderStatus, syncMatrix } = useRestaurantStore();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  useEffect(() => { seed(); }, []);
+  useEffect(() => { syncMatrix(); }, []);
 
   // Real-time synchronization listener
   const prevOrdersCount = useRef(orders.length);

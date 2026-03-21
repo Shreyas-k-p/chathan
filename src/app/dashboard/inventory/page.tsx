@@ -9,9 +9,9 @@ import { Package, Power, PackageCheck, PackageX, Activity } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function InventoryPage() {
-  const { menuItems, toggleMenuItemAvailability, seed } = useRestaurantStore();
+  const { menuItems, toggleMenuItemAvailability, syncMatrix } = useRestaurantStore();
 
-  useEffect(() => { seed(); }, []);
+  useEffect(() => { syncMatrix(); }, []);
 
   const handleToggle = (id: string, name: string, currentState: boolean) => {
     toggleMenuItemAvailability(id);

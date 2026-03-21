@@ -20,10 +20,10 @@ const getBadgeColor = (type: string) => {
 
 export default function AnnouncementsPage() {
   const { user } = useAuthStore();
-  const { announcements, addAnnouncement, seed } = useRestaurantStore();
+  const { announcements, addAnnouncement, syncMatrix } = useRestaurantStore();
   const [newMsg, setNewMsg] = useState({ title: '', content: '', type: 'general' as any });
 
-  useEffect(() => { seed(); }, []);
+  useEffect(() => { syncMatrix(); }, []);
 
   const canManage = ['manager', 'restaurant_admin', 'super_admin'].includes(user?.role || '');
 

@@ -20,7 +20,7 @@ const EventIcon = ({ type }: { type: string }) => {
 };
 
 export default function KitchenPage() {
-  const { orders, updateOrderStatus, removeItemFromOrder, seed } = useRestaurantStore();
+  const { orders, updateOrderStatus, removeItemFromOrder, syncMatrix } = useRestaurantStore();
   const [activeTab, setActiveTab] = useState('pending');
   
   // Real-time synchronization listener
@@ -37,7 +37,7 @@ export default function KitchenPage() {
     prevOrdersCount.current = orders.length;
   }, [orders]);
 
-  useEffect(() => { seed(); }, []);
+  useEffect(() => { syncMatrix(); }, []);
 
   const filteredOrders = orders.filter(o => o.status === activeTab);
 

@@ -9,9 +9,9 @@ import { useRestaurantStore } from '@/store/useRestaurantStore';
 import { toast } from 'sonner';
 
 export default function TablesPage() {
-  const { tables, addTable, updateTableStatus, deleteTable, seed } = useRestaurantStore();
+  const { tables, addTable, updateTableStatus, deleteTable, syncMatrix } = useRestaurantStore();
 
-  useEffect(() => { seed(); }, []);
+  useEffect(() => { syncMatrix(); }, []);
 
   const handleDeployTable = () => {
     const nextNum = tables.length > 0 ? Math.max(...tables.map(t => t.tableNumber)) + 1 : 1;

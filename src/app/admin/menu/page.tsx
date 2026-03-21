@@ -12,11 +12,11 @@ import { toast } from 'sonner';
 
 export default function MenuManagement() {
   const { user } = useAuthStore();
-  const { menuItems, addMenuItem, deleteMenuItem, seed } = useRestaurantStore();
+  const { menuItems, addMenuItem, deleteMenuItem, syncMatrix } = useRestaurantStore();
   const [isAdding, setIsAdding] = useState(false);
   const [newItem, setNewItem] = useState({ name: '', price: 0, description: '', imageUrl: '', category: 'Main Course', isVeg: true });
 
-  useEffect(() => { seed(); }, []);
+  useEffect(() => { syncMatrix(); }, []);
 
   // Filter items by current restaurant node
   const filteredItems = menuItems.filter(i => i.restaurantId === user?.restaurant?._id);
