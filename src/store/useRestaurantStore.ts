@@ -170,7 +170,9 @@ export const useRestaurantStore = create<RestaurantState>()(
       addManagedRestaurant: async (restaurant) => {
           try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-            const res = await fetch(`${apiUrl}/restaurants`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(restaurant) });
+            // Strip out frontend mock properties so Mongo can auto-generate them
+            const { id, createdAt, ...dbPayload } = restaurant; 
+            const res = await fetch(`${apiUrl}/restaurants`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dbPayload) });
             const data = await res.json();
             if (res.ok) set((state) => ({ managedRestaurants: [{...data, id: data._id}, ...state.managedRestaurants] }));
           } catch(e) {}

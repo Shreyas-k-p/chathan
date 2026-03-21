@@ -103,11 +103,17 @@ app.post("/api/announcements", authShield(["SUPER_ADMIN", "MANAGER", "SUB_MANAGE
 
 // SaaS Matrix: Multi-Restaurant Hub
 app.get("/api/restaurants", async (req,res)=> res.json(await Restaurant.find()));
-app.post("/api/restaurants", async (req,res)=> res.json(await Restaurant.create(req.body)));
+app.post("/api/restaurants", async (req,res)=> {
+    try { res.json(await Restaurant.create(req.body)); } 
+    catch(err) { res.status(500).json({ error: err.message }); }
+});
 
 // Node-Isolated Staff Logic
 app.get("/api/staff", async (req,res)=> res.json(await Staff.find().sort({ createdAt: -1 })));
-app.post("/api/staff", async (req,res)=> res.json(await Staff.create(req.body)));
+app.post("/api/staff", async (req,res)=> {
+    try { res.json(await Staff.create(req.body)); } 
+    catch(err) { res.status(500).json({ error: err.message }); }
+});
 app.put("/api/staff/photo/:id", async (req,res)=> res.json(await Staff.findByIdAndUpdate(req.params.id, { profilePhoto: req.body.profilePhoto }, { new: true })));
 app.delete("/api/staff/:id", async (req, res)=> res.json(await Staff.findByIdAndDelete(req.params.id)));
 
