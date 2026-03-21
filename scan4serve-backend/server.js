@@ -67,7 +67,7 @@ const authShield = (roles = []) => {
 // --- API ACTIONS Registry ---
 
 // Auth Registry
-app.post("/auth/login", async (req,res)=>{
+app.post("/api/auth/login", async (req,res)=>{
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -84,17 +84,17 @@ app.post("/auth/login", async (req,res)=>{
 });
 
 // SaaS Matrix: Multi-Restaurant Hub
-app.get("/restaurants", async (req,res)=> res.json(await Restaurant.find()));
-app.post("/restaurants", async (req,res)=> res.json(await Restaurant.create(req.body)));
+app.get("/api/restaurants", async (req,res)=> res.json(await Restaurant.find()));
+app.post("/api/restaurants", async (req,res)=> res.json(await Restaurant.create(req.body)));
 
 // Node-Isolated Menu Logic
-app.get("/menu/:restaurantId", async (req,res)=> res.json(await MenuItem.find({ restaurantId: req.params.restaurantId })));
-app.post("/menu", authShield(["MANAGER", "SUPER_ADMIN"]), async (req,res)=> res.json(await MenuItem.create({...req.body, restaurantId: req.user.restaurantId})));
+app.get("/api/menu/:restaurantId", async (req,res)=> res.json(await MenuItem.find({ restaurantId: req.params.restaurantId })));
+app.post("/api/menu", authShield(["MANAGER", "SUPER_ADMIN"]), async (req,res)=> res.json(await MenuItem.create({...req.body, restaurantId: req.user.restaurantId})));
 
 // Node-Isolated Orders
-app.get("/orders/:restaurantId", async (req,res)=> res.json(await Order.find({ restaurantId: req.params.restaurantId }).sort({ createdAt: -1 })));
+app.get("/api/orders/:restaurantId", async (req,res)=> res.json(await Order.find({ restaurantId: req.params.restaurantId }).sort({ createdAt: -1 })));
 
-app.post("/order", async (req,res)=>{
+app.post("/api/order", async (req,res)=>{
   try{
     const order = await Order.create(req.body);
     
@@ -106,7 +106,7 @@ app.post("/order", async (req,res)=>{
   } catch(err){ res.status(500).json({error:err.message}); }
 });
 
-app.put("/order/status/:id", async (req,res)=>{
+app.put("/api/order/status/:id", async (req,res)=>{
   const order = await Order.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
   const topic = `restaurant/${order.restaurantId}/table/${order.tableId.replace('T', '') || '1'}`;
   mqttClient.publish(topic, JSON.stringify({ type: "STATUS_UPDATE", order_id: order._id, status: order.status }));
@@ -114,7 +114,7 @@ app.put("/order/status/:id", async (req,res)=>{
 });
 
 // 🧪 SEED Registry Protocol
-app.get("/system/seed", async (req,res)=>{
+app.get("/api/system/seed", async (req,res)=>{
   try {
     if (mongoose.connection.readyState !== 1) {
        await mongoose.connect(process.env.MONGO_URI, mongoOptions);
