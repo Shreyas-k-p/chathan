@@ -34,7 +34,7 @@ const StatCard = ({ icon: Icon, label, value, trend, trendUp, color }: any) => (
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const { orders, menuItems, managedRestaurants, addManagedRestaurant, updateManagedRestaurant, syncMatrix } = useRestaurantStore();
-  const [newRestaurant, setNewRestaurant] = useState({ name: '', managerName: '', mobile: '', location: '', managerEmail: '', managerPassword: '' });
+  const [newRestaurant, setNewRestaurant] = useState({ name: '', managerName: '', mobile: '', location: '', managerEmail: '', managerPassword: '', managerPhoto: '' });
   const [editingRestaurant, setEditingRestaurant] = useState<ManagedRestaurant | null>(null);
   const [selectedRestaurant, setSelectedRestaurant] = useState<ManagedRestaurant | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -50,7 +50,7 @@ export default function DashboardPage() {
     if (!newRestaurant.name || !newRestaurant.managerName) return toast.error('Registry Payload Incomplete');
     const restaurant: ManagedRestaurant = { id: `r-${Date.now()}`, ...newRestaurant, status: 'active', createdAt: 'Recently Deployed', valuation: '₹0', staffCount: 0 };
     addManagedRestaurant(restaurant);
-    setNewRestaurant({ name: '', managerName: '', mobile: '', location: '', managerEmail: '', managerPassword: '' });
+    setNewRestaurant({ name: '', managerName: '', mobile: '', location: '', managerEmail: '', managerPassword: '', managerPhoto: '' });
     setIsCreateOpen(false);
     toast.success('SYNC: New Restaurant Node Active');
   };
@@ -108,6 +108,7 @@ export default function DashboardPage() {
                                     <Input value={newRestaurant.managerEmail as string} onChange={e => setNewRestaurant({...newRestaurant, managerEmail: e.target.value})} placeholder="Manager Login Email" type="email" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
                                     <Input value={newRestaurant.managerPassword as string} onChange={e => setNewRestaurant({...newRestaurant, managerPassword: e.target.value})} placeholder="Initial Password" type="password" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
                                 </div>
+                                <Input value={newRestaurant.managerPhoto as string} onChange={e => setNewRestaurant({...newRestaurant, managerPhoto: e.target.value})} placeholder="Manager Profile Photo (URL Link)" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner" />
                                 <div className="relative flex gap-2">
                                     <Input value={newRestaurant.location} onChange={e => setNewRestaurant({...newRestaurant, location: e.target.value})} placeholder="Location" className="bg-zinc-900 border-none h-14 pl-6 rounded-xl text-white font-black italic shadow-inner flex-1" />
                                     <Button type="button" onClick={() => { setMapTarget('create'); setIsMapOpen(true); }} variant="outline" className="h-14 w-14 rounded-xl border-zinc-800 bg-zinc-900 text-indigo-400 hover:text-white shrink-0"><Map size={20}/></Button>
@@ -198,7 +199,13 @@ export default function DashboardPage() {
                             </div>
                             <div className="flex gap-4">
                                 <Button type="submit" className="flex-1 h-16 bg-white text-black hover:bg-zinc-200 font-black uppercase italic tracking-widest rounded-2xl active:scale-95 transition-all shadow-2xl">SYCHRONIZE CORE</Button>
-                                <Button type="button" variant="ghost" className="w-16 h-16 rounded-2xl text-rose-500 hover:bg-rose-500/10 transition-all border border-rose-500/20 shadow-xl" onClick={() => toast.error('PROTOCOL: Node Deletion Restricted')}>
+                                <Button type="button" variant="ghost" className="w-16 h-16 rounded-2xl text-rose-500 hover:bg-rose-500/10 transition-all border border-rose-500/20 shadow-xl" onClick={() => {
+                                    if(window.confirm('WARNING: Permanently decommission this Restaurant Node?')) {
+                                        useRestaurantStore.getState().removeManagedRestaurant(editingRestaurant._id || editingRestaurant.id);
+                                        setIsEditOpen(false);
+                                        toast.warning('Node decommissioned permanently.');
+                                    }
+                                }}>
                                     <Trash2 size={24} />
                                 </Button>
                             </div>

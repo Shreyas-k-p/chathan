@@ -59,6 +59,8 @@ export interface ManagedRestaurant {
   createdAt: string;
   valuation?: string;
   staffCount?: number;
+  managerPhoto?: string;
+  _id?: string;
 }
 
 interface RestaurantState {
@@ -85,6 +87,7 @@ interface RestaurantState {
   updateStaffPhoto: (id: string, photo: string) => void;
   addManagedRestaurant: (restaurant: ManagedRestaurant) => void;
   updateManagedRestaurant: (id: string, updates: Partial<ManagedRestaurant>) => void;
+  removeManagedRestaurant: (id: string) => void;
   syncMatrix: () => Promise<void>;
 }
 
@@ -177,7 +180,14 @@ export const useRestaurantStore = create<RestaurantState>()(
             if (res.ok) set((state) => ({ managedRestaurants: [{...data, id: data._id}, ...state.managedRestaurants] }));
           } catch(e) {}
       },
-      updateManagedRestaurant: (id, updates) => set((state) => ({ managedRestaurants: state.managedRestaurants.map(r => r.id === id ? { ...r, ...updates } : r) })),
+      updateManagedRestaurant: (id, updates) => set((state) => ({ managedRestaurants: state.managedRestaurants.map(r => r.id === id || r._id === id ? { ...r, ...updates } : r) })),
+      removeManagedRestaurant: async (id) => {
+          try {
+              const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+              const res = await fetch(`${apiUrl}/restaurants/${id}`, { method: 'DELETE' });
+              if (res.ok) set((state) => ({ managedRestaurants: state.managedRestaurants.filter(r => r.id !== id && r._id !== id) }));
+          } catch(e) {}
+      },
 
       syncMatrix: async () => {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';

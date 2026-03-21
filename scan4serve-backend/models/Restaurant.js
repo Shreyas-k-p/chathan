@@ -8,6 +8,7 @@ const restaurantSchema = new mongoose.Schema({
   status: { type: String, enum: ["active", "pending"], default: "active" },
   valuation: { type: String, default: "₹0" },
   staffCount: { type: Number, default: 0 },
+  managerPhoto: String,
   createdAt: { type: Date, default: Date.now }
 });
 

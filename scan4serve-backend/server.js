@@ -115,6 +115,10 @@ app.post("/api/restaurants", async (req,res)=> {
     } 
     catch(err) { res.status(500).json({ error: err.message }); }
 });
+app.delete("/api/restaurants/:id", async (req,res)=> {
+    try { res.json(await Restaurant.findByIdAndDelete(req.params.id)); }
+    catch(err) { res.status(500).json({ error: err.message }); }
+});
 
 // Node-Isolated Staff Logic
 app.get("/api/staff", async (req,res)=> res.json(await Staff.find().sort({ createdAt: -1 })));

@@ -14,7 +14,7 @@ export default function StaffManagementPage() {
   const { user } = useAuthStore();
   const { staff, addStaff, removeStaff, syncMatrix } = useRestaurantStore();
   const [isAdding, setIsAdding] = useState(false);
-  const [newStaff, setNewStaff] = useState({ name: '', email: '', role: 'waiter' as any, password: '' });
+  const [newStaff, setNewStaff] = useState({ name: '', email: '', role: 'waiter' as any, password: '', profilePhoto: '' });
 
   useEffect(() => { syncMatrix(); }, []);
 
@@ -36,7 +36,7 @@ export default function StaffManagementPage() {
     
     addStaff(member);
     setIsAdding(false);
-    setNewStaff({ name: '', email: '', role: 'waiter', password: '' });
+    setNewStaff({ name: '', email: '', role: 'waiter', password: '', profilePhoto: '' });
     toast.success(`${member.name} registered to platform network.`);
   };
 
@@ -91,6 +91,10 @@ export default function StaffManagementPage() {
                              <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Master Login Key</label>
                              <Input value={newStaff.password} type="password" onChange={e => setNewStaff({...newStaff, password: e.target.value})} placeholder="Initial Passphrase" className="bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner" />
                          </div>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[9px] uppercase font-black text-zinc-600 tracking-widest italic ml-1">Profile Photo (Public Link)</label>
+                        <Input value={newStaff.profilePhoto as string} type="url" onChange={e => setNewStaff({...newStaff, profilePhoto: e.target.value})} placeholder="https://..." className="bg-zinc-800/40 border-none h-14 rounded-xl px-6 font-bold text-white shadow-inner" />
                     </div>
                     <Button type="submit" className="w-full h-16 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all text-sm shadow-xl shadow-indigo-600/20">
                          Verify & Commission Node
